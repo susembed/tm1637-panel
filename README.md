@@ -3,6 +3,7 @@ Use-cases: Most of tm1637 modules have only 4 digits, while TM1637 driver can ha
 
 - Implements a TM1637-style 7-segment display driver as an external (local) component.
 - Adds a public method you can call from lambdas: `it.raw(uint8_t segments, uint8_t pos)` which writes a raw 8-bit segment pattern to the specified digit position.
+- Adds a public method you can call from lambdas: `it.intensity(uint8_t intensity)` to set brightness (0-7). Now you can change brightness dynamically without hardcoding by setup value `intensity: 7` in YAML.
 ## How to install
 
 ### Local
@@ -65,7 +66,16 @@ Notes:
 - You must not write to positions outside the configured `num_digits` otherwise the device will complain: `[E][display.tm1637raw:430]: raw(): position 4 out of bounds (length 4)`. Just set `num_digits: 6` in most cases.
 - Positions are 0-indexed: position `0` is the left-most digit and `it.print()` fills from left to right.
 - You can mix `it.raw(...)` calls with `it.print(...)` calls in the same `lambda`. The order of calls matters. `it.print(...)` should be called before `it.raw(...)` to prevent unexpected of LEDs being lit.
+- You can call it from other lambdas too, e.g. button press handlers. 
+```yaml
+...
+    on_...:
+      - lambda: |-
+          id(my_tm).intensity(3); // set brightness to 3
+          id(my_tm).raw(0x01, 2); // light up segment A at position 2
+```
 
+But It only being applied when the display is next updated (e.g. after `update_interval` time has passed or `component.update: my_tm` action). So you should set values through static variables as shown in the `lambda` of first example.
 ## Segments and Grids
 
 The TM1637 driver supports up to 6 digits (grids) and each digit has 8 segments (A-G + DP). To drive LEDs or other indicators, you can use any combination of the 8 bits. You must refer to the TM1637 pinout.
