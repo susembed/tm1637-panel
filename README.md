@@ -43,10 +43,15 @@ display:
     dio_pin: GPIO4
     num_digits: 6
     id: my_tm
-    update_interval: 1s
+    update_interval: 1s // If set to 0 the display will be updated every loop.
     lambda: |-
       // Set a single segment (example: bit 1 = segment B)
       it.raw(0b00000010, 1);
+
+      static int grid5 = 255; // still int, but convert when sending
+      if (grid5 >= 0 && grid5 <= 0xFF) {                       // range-check A..X
+        it.raw(static_cast<uint8_t>(grid5), 4);
+      }
 
       // Set the decimal point at position 0
       it.raw(0x80, 0);  // 0x80 is the DP bit
@@ -57,8 +62,9 @@ display:
 Other display options (brightness, etc) are supported as per the built-in `tm1637` component. See [TM1637 ESPHome docs](https://esphome.io/components/display/tm1637/).
 
 Notes:
-- Positions are 0-indexed: position `0` is the left-most digit and `num_digits - 1` is the right-most digit. You must not write to positions outside the configured `num_digits` otherwise the device will complain: `[E][display.tm1637raw:430]: raw(): position 4 out of bounds (length 4)`. Just set `num_digits: 6` in most cases.
-- `it.raw(segments, pos)` writes the 8-bit `segments` value into the internal buffer for `pos`. If you call `it.raw(...)` from inside the display `lambda` that runs during an update, the change is visible immediately for that update.
+- You must not write to positions outside the configured `num_digits` otherwise the device will complain: `[E][display.tm1637raw:430]: raw(): position 4 out of bounds (length 4)`. Just set `num_digits: 6` in most cases.
+- Positions are 0-indexed: position `0` is the left-most digit and `it.print()` fills from left to right.
+- You can mix `it.raw(...)` calls with `it.print(...)` calls in the same `lambda`. The order of calls matters. `it.print(...)` should be called before `it.raw(...)` to prevent unexpected of LEDs being lit.
 
 ## Segments and Grids
 
@@ -70,3 +76,6 @@ If LED 1 is connected between SEG1 and GRID5, LED 2 between SEG2 and GRID5, etc,
 ```cpp
 it.raw(0b00000011, 4);
 ```
+## Compatibility
+
+- Tested with ESPHome 2025.12.6
