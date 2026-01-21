@@ -31,7 +31,7 @@ external_components:
         type: git
         url: git://github.com/susembeded/raw-tm1637-esphome
     components: [tm1637raw]
-
+```
 ## How to use (example YAML)
 
 Example that shows the most common usage including the `it.raw()` call inside the `lambda`:
