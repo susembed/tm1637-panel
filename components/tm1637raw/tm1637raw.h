@@ -50,7 +50,9 @@ namespace esphome
       /// Print `str` at position 0.
       uint8_t print(const char *str);
 
-      void set_intensity(uint8_t intensity) { this->intensity_ = intensity; }
+      void set_intensity(uint8_t intensity) { this->intensity_ = (intensity & 0x7); }
+      /// Convenience lambda-friendly API: call as `it.intensity(<0-7>);` from display lambdas
+      void intensity(uint8_t intensity) { this->set_intensity(intensity); }
       void set_inverted(bool inverted) { this->inverted_ = inverted; }
       void set_length(uint8_t length) { this->length_ = length; }
       void set_on(bool on) { this->on_ = on; }
