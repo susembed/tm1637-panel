@@ -63,6 +63,7 @@ Notes:
 ## Segments and Grids
 
 The TM1637 driver supports up to 6 digits (grids) and each digit has 8 segments (A-G + DP). To drive LEDs or other indicators, you can use any combination of the 8 bits. You must refer to the TM1637 pinout.
+<img width="390" height="365" alt="image" src="https://github.com/user-attachments/assets/a6563baf-ec3f-474f-a63e-f8a85bc4b8f4" />
 
 If LED 1 is connected between SEG1 and GRID5, LED 2 between SEG2 and GRID5, etc, then to light up LED 1 and LED 2 you would set bits 0 and 1 of the segments byte for position 5 (GRID5): 
 
